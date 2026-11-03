@@ -189,14 +189,9 @@ TaskFlow uses **MongoDB Atlas** as its cloud database.
 
 ## 🖥️ Application Screenshot
 
-```text
-screenshots/
-├── dashboard.png
-```
-
 ### Dashboard
 
-![TaskFlow Dashboard](screenshots/dashboard.png)
+![TaskFlow Dashboard](Dashboard.png)
 
 ---
 
