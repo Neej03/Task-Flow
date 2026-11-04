@@ -19,7 +19,29 @@ const taskForm = $("#taskForm");
 const taskTitle = $("#taskTitle");
 const taskDescription = $("#taskDescription");
 const taskTableBody = $("#taskTableBody");
+
 const toast = $("#toast");
+
+// Small count-up effect for dashboard metrics.
+function animateNumber(element, target) {
+  if (!element) return;
+  const end = Number(target) || 0;
+  const start = Number(element.dataset.currentValue || 0);
+  element.dataset.currentValue = String(end);
+  if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+    element.textContent = end;
+    return;
+  }
+  const duration = 520;
+  const started = performance.now();
+  const tick = (now) => {
+    const progress = Math.min((now - started) / duration, 1);
+    const eased = 1 - Math.pow(1 - progress, 3);
+    element.textContent = Math.round(start + (end - start) * eased);
+    if (progress < 1) requestAnimationFrame(tick);
+  };
+  requestAnimationFrame(tick);
+}
 
 function escapeHTML(value = "") {
   return String(value).replace(/[&<>"']/g, char => ({
@@ -173,16 +195,16 @@ function renderChart(completed, pending) {
       labels: ["Completed", "Pending"],
       datasets: [{
         data: [completed, pending],
-        backgroundColor: ["#10bed9", "#12354b"],
-        borderColor: ["#202123", "#202123"],
+        backgroundColor: ["#8b5cf6", "#17233d"],
+        borderColor: ["#111526", "#111526"],
         borderWidth: 3,
-        hoverOffset: 5
+        hoverOffset: 9
       }]
     },
     options: {
       responsive: true,
       maintainAspectRatio: false,
-      cutout: "0%",
+      cutout: "76%",
       plugins: { legend: { display: false }, tooltip: { enabled: true } }
     }
   });
@@ -195,11 +217,11 @@ function renderStats() {
   // The current database model stores completed as a boolean, not an in-progress status.
   const inProgress = 0;
 
-  $("#completedCount").textContent = completed;
-  $("#progressCount").textContent = inProgress;
-  $("#pendingCount").textContent = pending;
-  $("#totalCount").textContent = total;
-  $("#chartTotal").textContent = total;
+  animateNumber($("#completedCount"), completed);
+  animateNumber($("#progressCount"), inProgress);
+  animateNumber($("#pendingCount"), pending);
+  animateNumber($("#totalCount"), total);
+  animateNumber($("#chartTotal"), total);
   $("#legendProgress").textContent = inProgress;
   $("#legendCompleted").textContent = completed;
   $("#legendPending").textContent = pending;
@@ -377,3 +399,16 @@ if (localStorage.getItem("taskflow-theme") === "light") {
 }
 
 loadTasks();
+
+
+/* Premium dashboard interactions */
+document.addEventListener("keydown", event => {
+  if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === "k") {
+    event.preventDefault();
+    $("#searchInput")?.focus();
+  }
+});
+
+document.addEventListener("DOMContentLoaded", () => {
+  document.body.classList.add("ui-ready");
+});

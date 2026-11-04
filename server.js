@@ -130,6 +130,7 @@ app.use((error, req, res, next) => {
 
 
 
+
 // ===================================
 // 6. CONNECT DATABASE AND START SERVER
 // ===================================
@@ -137,32 +138,23 @@ app.use((error, req, res, next) => {
 const PORT = process.env.PORT || 5000;
 
 async function startServer() {
-
     try {
+        console.log("Connecting to MongoDB...");
 
-        await mongoose.connect(process.env.MONGODB_URI);
+        await mongoose.connect(process.env.MONGODB_URI, {
+            serverSelectionTimeoutMS: 10000
+        });
 
         console.log("MongoDB connected successfully!");
 
         app.listen(PORT, () => {
-
-            console.log(
-                `Server running at http://localhost:${PORT}`
-            );
-
+            console.log(`Server running at http://localhost:${PORT}`);
         });
 
     } catch (error) {
-
-        console.error(
-            "MongoDB connection failed:",
-            error.message
-        );
-
-        process.exit(1);
-
+        console.error("MongoDB connection failed:");
+        console.error(error.message);
     }
-
 }
 
 startServer();
